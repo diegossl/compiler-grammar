@@ -1,0 +1,12 @@
+var {int munduruca;}
+var {local real buba;}
+var {global boolean mundo;}
+var {string um, dois, tres;}
+var {
+    int ide1, ide2;
+    real ide3, ide4;
+}
+const {
+    int id2, id2;
+    real id4, id4;
+}

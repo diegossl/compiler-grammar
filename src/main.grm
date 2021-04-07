@@ -25,3 +25,114 @@ Id               = {Id Head}{Id Tail}*
              | string  
              | Id
 
+!===================== Main =================================
+
+<Decls> ::= <Decl> <Decls>
+          |
+
+<Decl>  ::= <Var Decl>
+         |  <Const Decl>
+         
+
+! ===================================================================
+! Variable Declaration
+! ===================================================================
+
+<Var Decl>     ::= var '{' <Line Decl> <Decl List>
+                
+<Line Decl>    ::= <Scope> <Var Type> <Var> <Var List>
+                |          <Var Type> <Var> <Var List>  
+                
+<Decl List>    ::= <Line Decl> <Decl List>
+                | '}'               
+                
+<Scope>    ::= local
+            |  global
+
+<Var Type>   ::=   int
+             | real
+             | boolean
+             | string
+
+<Var>      ::= Id <Array>
+
+<Array>    ::= '[' <Expr> ']'
+             | '[' ']'
+             |
+             
+<Var List> ::=  ',' <Var> <Var List>
+             | ';'
+       
+! ===================================================================
+! Constant declarations
+! ===================================================================
+
+<Const Decl>  ::= const '{' <Const Line Decl> <Const List>
+               
+<Const Line Decl> ::= <Var Type> <Var> <Var List>
+                   
+<Const List>      ::= <Const Line Decl> <Const List>
+                   | '}'
+
+! ===================================================================
+! Here begins the C's 15 levels of operator precedence.
+! TODO:
+!  To be substituted by our expressions and operators definitions.
+! ===================================================================
+
+<Expr>       ::= <Expr> ',' <Op Assign>   
+               | <Op Assign>
+
+<Op Assign>  ::= <Op If> '='   <Op Assign>
+               | <Op If> '+='  <Op Assign>
+               | <Op If> '-='  <Op Assign>
+               | <Op If> '*='  <Op Assign>
+               | <Op If> '/='  <Op Assign>
+               | <Op If> '^='  <Op Assign>
+               | <Op If> '&='  <Op Assign>
+               | <Op If> '|='  <Op Assign>
+               | <Op If> '>>=' <Op Assign>
+               | <Op If> '<<=' <Op Assign>
+               | <Op If>
+
+<Op If>      ::= <Op Or> '?' <Op If> ':' <Op If>
+               | <Op Or>
+
+<Op Or>      ::= <Op Or> '||' <Op And>
+               | <Op And>
+
+<Op And>     ::= <Op And> '&&' <Op BinOR>
+               | <Op BinOR>
+
+<Op BinOR>   ::= <Op BinOr> '|' <Op BinXOR>
+               | <Op BinXOR>
+
+<Op BinXOR>  ::= <Op BinXOR> '^' <Op BinAND>
+               | <Op BinAND>
+
+<Op BinAND>  ::= <Op BinAND> '&' <Op Equate>
+               | <Op Equate>
+
+<Op Equate>  ::= <Op Equate> '==' <Op Compare>
+               | <Op Equate> '!=' <Op Compare>
+               | <Op Compare>
+
+<Op Compare> ::= <Op Compare> '<'  <Op Shift>
+               | <Op Compare> '>'  <Op Shift>
+               | <Op Compare> '<=' <Op Shift>
+               | <Op Compare> '>=' <Op Shift>
+               | <Op Shift>
+
+<Op Shift>   ::= <Op Shift> '<<' <Op Add>
+               | <Op Shift> '>>' <Op Add>
+               | <Op Add>
+
+<Op Add>     ::= <Op Add> '+' <Op Mult>
+               | <Op Add> '-' <Op Mult>
+               | <Op Mult>
+
+<Op Mult>    ::= <Op Mult> '*' <Op Unary>
+               | <Op Mult> '/' <Op Unary>
+               | <Op Mult> '%' <Op Unary>
+               | <Op Unary>
+
