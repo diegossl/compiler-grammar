@@ -61,8 +61,7 @@ Id               = {Id Head}{Id Tail}*
                | '--'   <Op Unary>
                | <Value>
 
-<Value>       ::= NumberLiteral
-               | Id
+<Value>       ::= Id
                | DecLiteral
                | FloatLiteral
                | '(' <Expr> ')'
