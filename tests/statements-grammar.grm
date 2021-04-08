@@ -1,41 +1,17 @@
 "Case Sensitive" = True
 "Start Symbol"   = <Decls>
-                 
-! -------- Tokens ---------------------------------
-{Id Head}        = {Letter} + [_]
-{Id Tail}        = {Id Head} + {Digit}
 
-{String Ch}      = {Printable} - ["]
-{Char Ch}        = {Printable} - ['']
-
-DecLiteral       = [123456789]{digit}*
-FloatLiteral     = {Digit}*'.'{Digit}+
-
-StringLiteral    = '"'( {String Ch} | '\'{Printable} )* '"'
-CharLiteral      = '' ( {Char Ch} | '\'{Printable} )''
-
-Id               = {Id Head}{Id Tail}*
-     
 !-----------------------------------------------------------------------
 !Start
 
     <Decls> ::= <Decl> <Decls>
               |
 
-    <Decl>  ::= <Type>
-              | function <Type> Id '(' ')' <Func Block>
-              | procedure Id '(' ')' <Proc Block>
-
-!----------------------- Types -----------------------------------
-<Type>     ::= struct Id
-             | int
-             | real
-             | boolean
-             | string  
-             | Id
+    <Decl>  ::= function <Func Block>
+              | procedure <Proc Block>
 
 !-----------------------------------------------------------------------
-!Statements - Function Block
+!Function Block
 
     <Func Block>      ::= '{' <Func Stms> '}'
 
@@ -59,7 +35,7 @@ Id               = {Id Head}{Id Tail}*
                         | <Other Blocks>
    
 !-----------------------------------------------------------------------
-!Statements - Procedure Block
+!Procedure Block
 
     <Proc Block>      ::= '{' <Proc Stms> '}'
 
@@ -98,44 +74,3 @@ Id               = {Id Head}{Id Tail}*
     <Var Assign>   ::= VarAssign
     <Print>        ::= print
     <Read>         ::= read
-    
-!----------------------- Expressions ---------------------------
-<Expr>        ::= <Op Assign> <Expr>
-               | <Op Assign>
-
-<Op Assign>   ::= <Op Assign> '=' <Op Or> 
-               | <Op Or> 
-
-<Op Or>       ::= <Op Or> '||' <Op And>
-               | <Op And>
-
-<Op And>      ::= <Op And> '&&' <Op Equate>
-               | <Op Equate>
-
-<Op Equate>   ::= <Op Equate> '==' <Op Compare>
-               | <Op Equate> '!=' <Op Compare>
-               | <Op Compare>
-
-<Op Compare>  ::= <Op Compare> '<'  <Op Add>
-               | <Op Compare> '>'  <Op Add>
-               | <Op Compare> '<=' <Op Add>
-               | <Op Compare> '>=' <Op Add>
-               | <Op Add>
-
-<Op Add>      ::= <Op Add> '+' <Op Mult>
-               | <Op Add> '-' <Op Mult>
-               | <Op Mult>
-
-<Op Mult>     ::= <Op Mult> '*' <Op Unary>
-               | <Op Mult> '/' <Op Unary>
-               | <Op Unary>
-
-<Op Unary>    ::= '!'    <Op Unary>             
-               | '++'   <Op Unary>
-               | '--'   <Op Unary>
-               | <Value>
-
-<Value>       ::= Id
-               | DecLiteral
-               | FloatLiteral
-               | '(' <Expr> ')'
