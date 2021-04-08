@@ -98,3 +98,44 @@ Id               = {Id Head}{Id Tail}*
     <Var Assign>   ::= VarAssign
     <Print>        ::= print
     <Read>         ::= read
+    
+!----------------------- Expressions ---------------------------
+<Expr>        ::= <Op Assign> <Expr>
+               | <Op Assign>
+
+<Op Assign>   ::= <Op Assign> '=' <Op Or> 
+               | <Op Or> 
+
+<Op Or>       ::= <Op Or> '||' <Op And>
+               | <Op And>
+
+<Op And>      ::= <Op And> '&&' <Op Equate>
+               | <Op Equate>
+
+<Op Equate>   ::= <Op Equate> '==' <Op Compare>
+               | <Op Equate> '!=' <Op Compare>
+               | <Op Compare>
+
+<Op Compare>  ::= <Op Compare> '<'  <Op Add>
+               | <Op Compare> '>'  <Op Add>
+               | <Op Compare> '<=' <Op Add>
+               | <Op Compare> '>=' <Op Add>
+               | <Op Add>
+
+<Op Add>      ::= <Op Add> '+' <Op Mult>
+               | <Op Add> '-' <Op Mult>
+               | <Op Mult>
+
+<Op Mult>     ::= <Op Mult> '*' <Op Unary>
+               | <Op Mult> '/' <Op Unary>
+               | <Op Unary>
+
+<Op Unary>    ::= '!'    <Op Unary>             
+               | '++'   <Op Unary>
+               | '--'   <Op Unary>
+               | <Value>
+
+<Value>       ::= Id
+               | DecLiteral
+               | FloatLiteral
+               | '(' <Expr> ')'
