@@ -25,3 +25,45 @@ Id               = {Id Head}{Id Tail}*
              | string  
              | Id
 
+!----------------------- Expressions ---------------------------
+<Expr>        ::= <Op Assign> <Expr>
+               | <Op Assign>
+
+<Op Assign>   ::= <Op Assign> '=' <Op Or> 
+               | <Op Or> 
+
+<Op Or>       ::= <Op Or> '||' <Op And>
+               | <Op And>
+
+<Op And>      ::= <Op And> '&&' <Op Equate>
+               | <Op Equate>
+
+<Op Equate>   ::= <Op Equate> '==' <Op Compare>
+               | <Op Equate> '!=' <Op Compare>
+               | <Op Compare>
+
+<Op Compare>  ::= <Op Compare> '<'  <Op Add>
+               | <Op Compare> '>'  <Op Add>
+               | <Op Compare> '<=' <Op Add>
+               | <Op Compare> '>=' <Op Add>
+               | <Op Add>
+
+<Op Add>      ::= <Op Add> '+' <Op Mult>
+               | <Op Add> '-' <Op Mult>
+               | <Op Mult>
+
+<Op Mult>     ::= <Op Mult> '*' <Op Unary>
+               | <Op Mult> '/' <Op Unary>
+               | <Op Unary>
+
+<Op Unary>    ::= '!'    <Op Unary>             
+               | '++'   <Op Unary>
+               | '--'   <Op Unary>
+               | <Value>
+
+<Value>       ::= NumberLiteral
+               | Id
+               | DecLiteral
+               | FloatLiteral
+               | '(' <Expr> ')'
+
