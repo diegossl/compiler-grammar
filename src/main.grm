@@ -1,6 +1,5 @@
-! Welcome to GOLD Parser Builder 5.2
 "Case Sensitive" = True
-"Start Symbol"   = <Type>
+"Start Symbol"   = <Decls>
                  
 ! -------- Tokens ---------------------------------
 {Id Head}        = {Letter} + [_]
@@ -16,7 +15,17 @@ StringLiteral    = '"'( {String Ch} | '\'{Printable} )* '"'
 CharLiteral      = '' ( {Char Ch} | '\'{Printable} )''
 
 Id               = {Id Head}{Id Tail}*
-                 
+     
+!-----------------------------------------------------------------------
+!Start
+
+    <Decls> ::= <Decl> <Decls>
+              |
+
+    <Decl>  ::= <Type>
+              | function <Type> Id '(' ')' <Func Block>
+              | procedure Id '(' ')' <Proc Block>
+
 !----------------------- Types -----------------------------------
 <Type>     ::= struct Id
              | int
@@ -25,3 +34,67 @@ Id               = {Id Head}{Id Tail}*
              | string  
              | Id
 
+!-----------------------------------------------------------------------
+!Statements - Function Block
+
+    <Func Block>      ::= '{' <Func Stms> '}'
+
+    <Func Stms>       ::= <Func Stm> <Func Stms>
+                        |
+                   
+    <Func Stm>        ::= if '(' <Log Expr> ')' then <Func If Stm>
+                        | while '(' <Log Expr> ')' <Func Stm>
+                        | <Func Normal Stm>
+                        
+    <Func If Stm>     ::= <Func Stm>
+                        | <Func Then Stm> else <Func Stm>
+                   
+    <Func Then Stm>   ::= if '(' <Log Expr> ')' then <Func Then Stm> else <Func Then Stm>
+                        | while '(' <Log Expr> ')' <Func Then Stm>
+                        | <Func Normal Stm>
+                   
+    <Func Normal Stm> ::= <Func Block>                        
+                        | return <Gen Expr> ';'
+                        | ';'
+                        | <Other Blocks>
+   
+!-----------------------------------------------------------------------
+!Statements - Procedure Block
+
+    <Proc Block>      ::= '{' <Proc Stms> '}'
+
+    <Proc Stms>       ::= <Proc Stm> <Proc Stms>
+                        |
+                   
+    <Proc Stm>        ::= if '(' <Log Expr> ')' then <Proc If Stm>
+                        | while '(' <Log Expr> ')' <Proc Stm>
+                        | <Proc Normal Stm>
+                        
+    <Proc If Stm>     ::= <Proc Stm>
+                        | <Proc Then Stm> else <Proc Stm>
+                   
+    <Proc Then Stm>   ::= if '(' <Log Expr> ')' then <Proc Then Stm> else <Proc Then Stm>
+                        | while '(' <Log Expr> ')' <Proc Then Stm>
+                        | <Proc Normal Stm>
+                   
+    <Proc Normal Stm> ::= <Proc Block>                        
+                        | ';'                        
+                        | <Other Blocks>
+
+!-----------------------------------------------------------------------
+!Other Blocks
+
+    <Log Expr> ::= LogExpr
+    <Gen Expr> ::= GenExpr
+
+    <Other Blocks> ::= <Func Call>
+                     | <Var Block>
+                     | <Var Assign>
+                     | <Print>
+                     | <Read>
+
+    <Func Call>    ::= FuncCall
+    <Var Block>    ::= VarBlock
+    <Var Assign>   ::= VarAssign
+    <Print>        ::= print
+    <Read>         ::= read
