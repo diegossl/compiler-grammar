@@ -1,0 +1,47 @@
+struct structTest{
+    var {
+        int varIntStruct;
+        string varStringStruct;
+    }
+    const {
+        real constStruct=2;  
+    }
+}
+
+const {
+    int conts1= 0;
+    real const2=2;
+}
+var {
+    int varInt1, varInt2;
+    real varReal;
+    string varString;
+}
+
+procedure start(){
+    var {
+        int varInt1
+    }
+    loca.varInt1 = global.varInt1 + testFunction();
+    testProcedure(testFunction());
+    testFunction()
+    read(varInt1)
+    print(varInt1)
+}
+
+function int testFunction(int a, real b){
+    var {
+        int result;
+    }
+    result = a + b;
+    return result;
+}
+
+procedure testProcedure(string show){
+    print("Mostrar:");
+    print(show);
+}
+procedure testProcedure(int show){
+    print("Mostrar:");
+    print(show);
+}
