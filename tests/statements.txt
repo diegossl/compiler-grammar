@@ -1,4 +1,4 @@
-function {
+function int f() {
     FuncCall
     VarBlock
     VarAssign
@@ -33,7 +33,7 @@ function {
      return GenExpr;
 }
 
-procedure {
+procedure p(){
     FuncCall
     VarBlock
     VarAssign
