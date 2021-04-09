@@ -1,20 +1,16 @@
 "Case Sensitive" = True
 "Start Symbol"   = <Decls>
                  
-! -------- Tokens ---------------------------------
-{Id Head}        = {Letter} + [_]
-{Id Tail}        = {Id Head} + {Digit}
+! -------- Terminals ---------------------------------
+{String Ch} = {Printable} - ["]
+{Char Ch} = {Printable} - ['']
 
-{String Ch}      = {Printable} - ["]
-{Char Ch}        = {Printable} - ['']
+Num = {Number}+('.'{Number}+)?
 
-DecLiteral       = [123456789]{digit}*
-FloatLiteral     = {Digit}*'.'{Digit}+
+StringLiteral = '"'( {String Ch} | '\'{Printable} )* '"'
+CharLiteral = '' ( {Char Ch} | '\'{Printable} )''
 
-StringLiteral    = '"'( {String Ch} | '\'{Printable} )* '"'
-CharLiteral      = '' ( {Char Ch} | '\'{Printable} )''
-
-Id               = {Id Head}{Id Tail}*
+Id = {Letter}({AlphaNumeric}|[_])*
      
 !-----------------------------------------------------------------------
 !Start
