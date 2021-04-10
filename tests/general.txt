@@ -26,6 +26,8 @@ procedure start(){
     testFunction();
     read(varInt1);
     print(varInt1);
+
+    testIfs(500);
 }
 
 function int testFunction(int a, real b){
@@ -43,4 +45,38 @@ procedure testProcedure(string show){
 procedure testProcedure(int show){
     print("Mostrar:");
     print(show);
+}
+
+function int testIfs(int numero) {
+    var {
+        int resposta, vezes;
+        boolean acertou;
+        
+        vezes   = 0;
+        acertou = false;
+    }
+
+    print("adivinhe o numero natural");
+
+    while (!acertou && vezes < numero) {
+        vezes++;
+    
+        print("digite um numero:");
+        read(resposta);
+        
+        if(resposta < numero) then
+            print("tem que ser maior");
+        else if (resposta > numero) then
+            print("tem que ser menor");
+        else {
+            if (vezes == 1) then
+                print("acertou de primeira");
+            else
+                print("acertou, mas demorou ", vezes, "vezes");
+                
+            return true;
+        }                            
+    }    
+    
+    return false;
 }
