@@ -1,17 +1,13 @@
 struct structTest{
+    const {
+        int  a[3][10]= {3, 3, 99, teste()},{a > 9,10};
+    }
     var {
         int varIntStruct;
         string varStringStruct;
     }
-    const {
-        real constStruct=2;  
-    }
 }
 
-const {
-    int conts1= 0;
-    real const2=2;
-}
 var {
     int varInt1, varInt2;
     real varReal;
@@ -20,13 +16,16 @@ var {
 
 procedure start(){
     var {
-        int varInt1
+        int varInt1;
     }
-    loca.varInt1 = global.varInt1 + testFunction();
+    teste[9] = 77;
+    local.a[0] = global.varInt[2] + testFunction();
+    local.a = global.varInt[2] + testFunction();
+    local.a = global.varInt1 + testFunction();
     testProcedure(testFunction());
-    testFunction()
-    read(varInt1)
-    print(varInt1)
+    testFunction();
+    read(varInt1);
+    print(varInt1);
 }
 
 function int testFunction(int a, real b){
