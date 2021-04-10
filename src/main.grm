@@ -247,4 +247,3 @@ str       = '"' ( {string} | '\'{printable} )* '"'
 
     <Id Value> ::= <Arrays> <Accesses>                                                   !first = {'[', '.'}
                  | '(' <Args> ')'                                                        !first = {'('}
-
