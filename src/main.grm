@@ -1,137 +1,249 @@
 "Case Sensitive" = True
-"Start Symbol"   = <Decls>
+"Start Symbol"   = <Program>
+
+{id head} = {letter} + [_]
+{id tail} = {id head} + {digit}
+{string}  = {printable} - ["]
                  
-! -------- Terminals ---------------------------------
-{String Ch} = {Printable} - ["]
-{Char Ch} = {Printable} - ['']
+id        = {id head} {id tail}*           
+num       = {digit}+ | {digit}+'.'{digit}+          
+str       = '"' ( {string} | '\'{printable} )* '"'
 
-Num = {Number}+('.'{Number}+)?
-
-StringLiteral = '"'( {String Ch} | '\'{Printable} )* '"'
-CharLiteral = '' ( {Char Ch} | '\'{Printable} )''
-
-Id = {Letter}({AlphaNumeric}|[_])*
-     
 !-----------------------------------------------------------------------
 !Start
 
-    <Decls> ::= <Decl> <Decls>
-              |
+    <Program>     ::= <Structs> <Const Block> <Var Block> <Start Block> <Decls> !first = {struct, const}                  
 
-    <Decl>  ::= <Type>
-              | function <Type> Id '(' ')' <Func Block>
-              | procedure Id '(' ')' <Proc Block>
+    <Structs>     ::= <Struct Block> <Structs>                                  !first = {struct}
+                    |
+               
+    <Start Block> ::= procedure start '(' ')' <Proc Block>                      !first = {procedure}
 
-!----------------------- Types -----------------------------------
-<Type>     ::= struct Id
-             | int
-             | real
-             | boolean
-             | string  
-             | Id
-
-!-----------------------------------------------------------------------
-!Statements - Function Block
-
-    <Func Block>      ::= '{' <Func Stms> '}'
-
-    <Func Stms>       ::= <Func Stm> <Func Stms>
-                        |
-                   
-    <Func Stm>        ::= if '(' <Log Expr> ')' then <Func If Stm>
-                        | while '(' <Log Expr> ')' <Func Stm>
-                        | <Func Normal Stm>
-                        
-    <Func If Stm>     ::= <Func Stm>
-                        | <Func Then Stm> else <Func Stm>
-                   
-    <Func Then Stm>   ::= if '(' <Log Expr> ')' then <Func Then Stm> else <Func Then Stm>
-                        | while '(' <Log Expr> ')' <Func Then Stm>
-                        | <Func Normal Stm>
-                   
-    <Func Normal Stm> ::= <Func Block>                        
-                        | return <Gen Expr> ';'
-                        | ';'
-                        | <Other Blocks>
-   
-!-----------------------------------------------------------------------
-!Statements - Procedure Block
-
-    <Proc Block>      ::= '{' <Proc Stms> '}'
-
-    <Proc Stms>       ::= <Proc Stm> <Proc Stms>
-                        |
-                   
-    <Proc Stm>        ::= if '(' <Log Expr> ')' then <Proc If Stm>
-                        | while '(' <Log Expr> ')' <Proc Stm>
-                        | <Proc Normal Stm>
-                        
-    <Proc If Stm>     ::= <Proc Stm>
-                        | <Proc Then Stm> else <Proc Stm>
-                   
-    <Proc Then Stm>   ::= if '(' <Log Expr> ')' then <Proc Then Stm> else <Proc Then Stm>
-                        | while '(' <Log Expr> ')' <Proc Then Stm>
-                        | <Proc Normal Stm>
-                   
-    <Proc Normal Stm> ::= <Proc Block>                        
-                        | ';'                        
-                        | <Other Blocks>
-
-!-----------------------------------------------------------------------
-!Other Blocks
-
-    <Log Expr> ::= LogExpr
-    <Gen Expr> ::= GenExpr
-
-    <Other Blocks> ::= <Func Call>
-                     | <Var Block>
-                     | <Var Assign>
-                     | <Print>
-                     | <Read>
-
-    <Func Call>    ::= FuncCall
-    <Var Block>    ::= VarBlock
-    <Var Assign>   ::= VarAssign
-    <Print>        ::= print
-    <Read>         ::= read
     
-!----------------------- Expressions ---------------------------
-<Expr>        ::= <Op Assign> <Expr>
-               | <Op Assign>
+    <Decls>       ::= <Decl> <Decls>                                            !first = {function, procedure}
+                    |
+              
+    <Decl>        ::= <Func Decl>                                               !first = {function}
+                    | <Proc Decl>                                               !first = {procedure}
 
-<Op Assign>   ::= <Op Assign> '=' <Op Or> 
-               | <Op Or> 
+!-----------------------------------------------------------------------
+!Struct
 
-<Op Or>       ::= <Op Or> '||' <Op And>
-               | <Op And>
+    <Struct Block> ::= struct id <Extends> '{' <Const Block> <Var Block> '}'    !first = {struct}
+    
+    <Extends>      ::= extends struct id                                        !first = {extends}
+                     |    
 
-<Op And>      ::= <Op And> '&&' <Op Equate>
-               | <Op Equate>
+!-----------------------------------------------------------------------
+!Constants and Variables Block
 
-<Op Equate>   ::= <Op Equate> '==' <Op Compare>
-               | <Op Equate> '!=' <Op Compare>
-               | <Op Compare>
+    <Const Block> ::= const '{' <Var Decls> '}' |                                !first = {const}                  
 
-<Op Compare>  ::= <Op Compare> '<'  <Op Add>
-               | <Op Compare> '>'  <Op Add>
-               | <Op Compare> '<=' <Op Add>
-               | <Op Compare> '>=' <Op Add>
-               | <Op Add>
+    <Var Block>   ::= var '{' <Var Decls> '}' |                                  !first = {var}
 
-<Op Add>      ::= <Op Add> '+' <Op Mult>
-               | <Op Add> '-' <Op Mult>
-               | <Op Mult>
+!-----------------------------------------------------------------------
+!Variables Type and Typedef
 
-<Op Mult>     ::= <Op Mult> '*' <Op Unary>
-               | <Op Mult> '/' <Op Unary>
-               | <Op Unary>
+    <Type>    ::= int                                                           !first = {int}
+                | real                                                          !first = {real}
+                | boolean                                                       !first = {boolean}
+                | string                                                        !first = {string}
+                | struct id                                                     !first = {struct}                      
 
-<Op Unary>    ::= '!'    <Op Unary>             
-               | '++'   <Op Unary>
-               | '--'   <Op Unary>
-               | <Value>
+    <Typedef> ::= typedef <Type> id ';'                                         !first = {typedef}
 
-<Value>       ::= Id
-               | DecLiteral
-               | FloatLiteral
-               | '(' <Expr> ')'
+!-----------------------------------------------------------------------
+!Variable Declarations
+
+    <Var Decls> ::= <Var Decl> <Var Decls>                                      !first = {int, real, boolean, string, struct, typedef, id, local, global}
+                  | 
+
+    <Var Decl>  ::= <Type> <Var> <Var List> ';'                                 !first = {int, real, boolean, string, struct}
+                  | <Typedef>                                                   !first = {typedef}
+                  | id <Var Id>                                                 !first = {id}
+                  | <Stm Scope>                                                 !first = {local, global}
+
+    <Var Id>    ::= <Var> <Var List> ';'                                        !first = {id}
+                  | <Stm Id>                                                    !first = {'=', '[', '.' '('}
+
+    <Var>       ::= id <Arrays>                                                 !first = {id}
+
+    <Var List>  ::= ',' <Var> <Var List>                                         !first = {','}
+                  |                                                              
+    
+!-----------------------------------------------------------------------
+!Arrays
+
+    <Array>  ::= '[' <Index> ']'                                                !first = {'['}
+
+    <Index>  ::= <Expr>                                                         !first = {'!', num, str, log, id '('}
+               |                                                                
+
+    <Arrays> ::= <Array> <Arrays>                                               !first = {'['}
+               |
+
+!-----------------------------------------------------------------------
+!Assign and Access
+
+    <Assign>   ::= '=' <Expr> ';'                                               !first = {'='}
+                 | '++' ';'                                                     !first = {'++'}
+                 | '--' ';'                                                     !first = {'--'}
+
+    <Access>   ::= '.' id <Arrays>                                              !first = {'.'}
+
+    <Accesses> ::= <Access> <Accesses>                                          !first = {'.'}
+                 |
+
+!-----------------------------------------------------------------------
+!Arguments
+
+    <Args>      ::= <Expr> <Args List>                                          !first = {'!', num, str, log, id '('}
+                  |
+
+    <Args List> ::= ',' <Expr> <Args List>                                       !first = {','}
+                  |
+
+!-----------------------------------------------------------------------
+!Function Declaration
+
+    <Func Decl> ::= function <Param Type> id '(' <Params> ')' <Func Block>      !first{function}
+
+!-----------------------------------------------------------------------
+!Procedure Declaration
+
+    <Proc Decl> ::= procedure id '(' <Params> ')' <Proc Block>                  !first{procedure}
+
+!-----------------------------------------------------------------------
+!Parameters
+
+    <Param Type>   ::= <Type>                                                   !first = {int, real, boolean, string, struct}
+                     | id                                                       !first = {id}
+
+    <Params>       ::= <Param> <Params List>                                    !first = {int, real, boolean, string, struct, id}
+                     |
+
+    <Param>        ::= <Param Type> id <Param Arrays>                           !first = {int, real, boolean, string, struct, id}
+
+    <Params List>  ::= ',' <Param> <Params List>                                !first = {','}
+                     |
+
+    <Param Arrays> ::= '[' ']' <Param Mult Arrays>                              !first = {'['}
+                     |
+
+    <Param Mult Arrays> ::= '[' num ']' <Param Mult Arrays>                     !first = {'['}
+                          |
+
+!-----------------------------------------------------------------------
+!Function Block
+
+    <Func Block>      ::= '{' <Var Block> <Func Stms> '}'                                 !first = {'{'}
+
+    <Func Stms>       ::= <Func Stm> <Func Stms>                                          !first = {if, while, '{', id, local, global, print, read, ';', return}
+                        |
+                   
+    <Func Stm>        ::= if '(' <Expr> ')' then <Func If Stm>                            !first = {if}
+                        | while '(' <Expr> ')' <Func Stm>                                 !first = {while}
+                        | <Func Normal Stm>                                               !first = {'{', id, local, global, print, read, ';', return}
+                        
+    <Func If Stm>     ::= <Func Stm>                                                      !first = {if, while, '{', id, local, global, print, read, ';', return}
+                        | <Func Then Stm> else <Func Stm>                                 !first = {if, while, '{', id, local, global, print, read, ';', return}
+                   
+    <Func Then Stm>   ::= if '(' <Expr> ')' then <Func Then Stm> else <Func Then Stm>     !first = {if}
+                        | while '(' <Expr> ')' <Func Then Stm>                            !first = {while}
+                        | <Func Normal Stm>                                               !first = {'{', id, local, global, print, read, ';', return}
+                   
+    <Func Normal Stm> ::= '{' <Func Stms> '}'                                             !first = {'{'}
+                        | <Var Stm>                                                       !first = {id, local, global, print, read}
+                        | ';'                                                             !first = {';'}
+                        | return <Expr> ';'                                               !first = {return}
+
+!-----------------------------------------------------------------------
+!Procedure Block
+
+    <Proc Block>      ::= '{' <Var Block> <Proc Stms> '}'                                 !first = {'{'}
+
+    <Proc Stms>       ::= <Proc Stm> <Proc Stms>                                          !first = {if, while, '{', id, local, global, print, read, ';'}
+                        |
+                   
+    <Proc Stm>        ::= if '(' <Expr> ')' then <Proc If Stm>                            !first = {if}
+                        | while '(' <Expr> ')' <Proc Stm>                                 !first = {while}
+                        | <Proc Normal Stm>                                               !first = {'{', id, local, global, print, read, ';'}
+                        
+    <Proc If Stm>     ::= <Proc Stm>                                                      !first = {if, while, '{', id, local, global, print, read, ';'}
+                        | <Proc Then Stm> else <Proc Stm>                                 !first = {if, while, '{', id, local, global, print, read, ';'}
+                   
+    <Proc Then Stm>   ::= if '(' <Expr> ')' then <Proc Then Stm> else <Proc Then Stm>     !first = {if}
+                        | while '(' <Expr> ')' <Proc Then Stm>                            !first = {while}
+                        | <Proc Normal Stm>                                               !first = {'{', id, local, global, print, read, ';'}
+                   
+    <Proc Normal Stm> ::= '{' <Proc Stms> '}'                                             !first = {'{'}
+                        | <Var Stm>                                                       !first = {id, local, global, print, read}
+                        | ';'                                                             !first = {';'}
+                      
+!-----------------------------------------------------------------------
+!Variable Statements
+
+    <Var Stm>   ::= id <Stm Id>                                                           !first = {id}
+                  | <Stm Scope>                                                           !first = {local, global}
+                  | <Stm Cmd>                                                             !first = {print, read}
+
+    <Stm Id>    ::= <Assign>                                                              !first = {'=', '+', '-'}
+                  | <Array> <Arrays> <Accesses> <Assign>                                  !first = {'['}
+                  | <Access> <Accesses> <Assign>                                          !first = {'.'}
+                  | '(' <Args> ')' ';'                                                    !first = {'('}
+
+    <Stm Scope> ::= local <Access> <Accesses> <Assign>                                    !first = {local}
+                  | global <Access> <Accesses> <Assign>                                   !first = {global}
+
+    <Stm Cmd>   ::= print '(' <Args> ')' ';'                                              !first = {print}
+                  | read '(' <Args> ')' ';'                                               !first = {read}
+
+!-----------------------------------------------------------------------
+!Expressions  
+    
+    <Expr>     ::= <Or>                                                                  !first = {'!', num, str, log, id '('}
+                
+    <Or>       ::= <And> <Or_>                                                           !first = {'!', num, str, log, id '('}
+    <Or_>      ::= '||' <And> <Or_>                                                      !first = {'||'}
+                 | 
+
+    <And>      ::= <Equate> <And_>                                                       !first = {'!', num, str, log, id '('}
+    <And_>     ::= '&&' <Equate> <And_>                                                  !first = {'&&'}
+                 | 
+
+    <Equate>   ::= <Compare> <Equate_>                                                   !first = {'!', num, str, log, id '('}
+    <Equate_>  ::= '==' <Compare> <Equate_>                                              !first = {'=='}
+                 | '!=' <Compare> <Equate_>                                              !first = {'!='}
+                 | 
+
+    <Compare>  ::= <Add> <Compare_>                                                      !first = {'!', num, str, log, id '('}
+    <Compare_> ::= '<'  <Add> <Compare_>                                                 !first = {'>'}
+                 | '>' <Add> <Compare_>                                                  !first = {'<'}
+                 | '<=' <Add> <Compare_>                                                 !first = {'<='}
+                 | '>=' <Add> <Compare_>                                                 !first = {'>='}
+                 | 
+
+    <Add>      ::= <Mult> <Add_>                                                         !first = {'!', num, str, log, id '('}
+    <Add_>     ::= '+' <Mult> <Add_>                                                     !first = {'+'}
+                 | '-' <Mult> <Add_>                                                     !first = {'-'}
+                 | 
+                   
+    <Mult>     ::= <Unary> <Mult_>                                                       !first = {'!', num, str, log, id '('}
+    <Mult_>    ::= '*' <Unary> <Mult_>                                                   !first = {'*'}
+                 | '/' <Unary> <Mult_>                                                   !first = {'/'}
+                 | 
+
+    <Unary>    ::= '!' <Unary>                                                           !first = {'!'}
+                 | <Value>                                                               !first = {num, str, log, id '('}
+
+    <Value>    ::= num                                                                   !first = {num}
+                 | str                                                                   !first = {str}
+                 | log                                                                   !first = {log}
+                 | 'local.' id
+                 | 'global.' id
+                 | id <Id Value>   
+                                                                         !first = {id}
+                 | '(' <Expr> ')'                                                        !first = {'('}
+
+    <Id Value> ::= <Arrays> <Accesses>                                                   !first = {'[', '.'}
+                 | '(' <Args> ')'                                                        !first = {'('}
