@@ -8,7 +8,9 @@
 id        = {id head} {id tail}*           
 num       = {digit}+ | {digit}+'.'{digit}+          
 str       = '"' ( {string} | '\'{printable} )* '"'
-
+Comment Start = '/*'
+Comment End   = '*/'
+Comment Line  = '//'
 !-----------------------------------------------------------------------
 !Start
 
@@ -37,7 +39,7 @@ str       = '"' ( {string} | '\'{printable} )* '"'
 !-----------------------------------------------------------------------
 !Constants and Variables Block
 
-    <Const Block> ::= const '{' <Var Decls> '}' |                                !first = {const}                  
+    <Const Block> ::= const '{' <Const Decls> '}' |                                !first = {const}                  
 
     <Var Block>   ::= var '{' <Var Decls> '}' |                                  !first = {var}
 
@@ -60,9 +62,9 @@ str       = '"' ( {string} | '\'{printable} )* '"'
 
     <Var Decl>  ::= <Type> <Var> <Var List> ';'                                 !first = {int, real, boolean, string, struct}
                   | <Typedef>                                                   !first = {typedef}
-                  | id <Var Id>                                                 !first = {id}
                   | <Stm Scope>                                                 !first = {local, global}
-
+                  | id <Var Id>                                                 !first = {id}
+                  
     <Var Id>    ::= <Var> <Var List> ';'                                        !first = {id}
                   | <Stm Id>                                                    !first = {'=', '[', '.' '('}
 
@@ -71,6 +73,35 @@ str       = '"' ( {string} | '\'{printable} )* '"'
     <Var List>  ::= ',' <Var> <Var List>                                         !first = {','}
                   |                                                              
     
+!-----------------------------------------------------------------------
+!Constant Declarations
+
+    <Const Decls> ::= <Const Decl> <Const Decls>                                      !first = {int, real, boolean, string, struct, typedef, id, local, global}
+                  | 
+
+    <Const Decl>  ::= <Type> <Const> <Const List>                                 !first = {int, real, boolean, string, struct}
+                  | <Typedef>                                                   !first = {typedef}
+                  | <Stm Scope>                                                 !first = {local, global}
+                  | id <Const Id>                                                 !first = {id}
+                  
+    <Const Id>    ::= <Const> <Const List> ';'                                        !first = {id}
+                  | <Stm Id>                                                    !first = {'=', '[', '.' '('}
+
+    <Const>       ::= id <Arrays>                                               !first = {id}
+
+    <Const List>  ::= ',' <Const> <Const List>                                         !first = {','}
+                  |  '=' <Decl Atribute>';'
+
+
+<Decl Atribute> ::= <Array Decl>
+        |  <Expr>
+
+
+!-----------------------------------------------------------------------
+!Arrays Atributes
+<Array Decl>    ::= '{' <Array Def> '}' ',' <Array Decl> | '{' <Array Def> '}' 
+ 
+<Array Def>     ::= <Expr> ',' <Array Def> | <Expr>
 !-----------------------------------------------------------------------
 !Arrays
 
@@ -183,8 +214,8 @@ str       = '"' ( {string} | '\'{printable} )* '"'
 !-----------------------------------------------------------------------
 !Variable Statements
 
-    <Var Stm>   ::= id <Stm Id>                                                           !first = {id}
-                  | <Stm Scope>                                                           !first = {local, global}
+    <Var Stm>   ::= <Stm Scope>                                                           !first = {local, global}
+                  | id <Stm Id>                                                           !first = {id}
                   | <Stm Cmd>                                                             !first = {print, read}
 
     <Stm Id>    ::= <Assign>                                                              !first = {'=', '+', '-'}
@@ -239,11 +270,12 @@ str       = '"' ( {string} | '\'{printable} )* '"'
     <Value>    ::= num                                                                   !first = {num}
                  | str                                                                   !first = {str}
                  | log                                                                   !first = {log}
-                 | 'local.' id
-                 | 'global.' id
+                 | 'local' <Access>
+                 | 'global' <Access>
                  | id <Id Value>   
                                                                          !first = {id}
                  | '(' <Expr> ')'                                                        !first = {'('}
 
     <Id Value> ::= <Arrays> <Accesses>                                                   !first = {'[', '.'}
                  | '(' <Args> ')'                                                        !first = {'('}
+
