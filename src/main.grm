@@ -8,9 +8,12 @@
 id        = {id head} {id tail}*           
 num       = {digit}+ | {digit}+'.'{digit}+          
 str       = '"' ( {string} | '\'{printable} )* '"'
+log       = true | false
+
 Comment Start = '/*'
 Comment End   = '*/'
 Comment Line  = '//'
+
 !-----------------------------------------------------------------------
 !Start
 
