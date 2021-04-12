@@ -8,10 +8,21 @@ struct structTest{
     }
 }
 
+struct structDois extends struct structTest{
+    const {
+        
+    }
+    var {
+        
+    }
+}
+
+
 var {
     int varInt1, varInt2;
     real varReal;
     string varString;
+    struct structDois s1;
 }
 
 procedure start(){
@@ -19,6 +30,7 @@ procedure start(){
         int varInt1;
     }
     teste[9] = 77;
+    s1.varIntStruct = 2;
     local.a[0] = global.varInt[2] + testFunction();
     local.a = global.varInt[2] + testFunction();
     local.a = global.varInt1 + testFunction();
