@@ -99,9 +99,11 @@ Comment Line  = '//'
 
 !-----------------------------------------------------------------------
 !Arrays Atributes
-<Array Decl>    ::= '{' <Array Def> '}' ',' <Array Decl> | '{' <Array Def> '}' 
- 
-<Array Def>     ::= <Expr> ',' <Array Def> | <Expr>
+<Array Decl>    ::= '{' <Array Def> '}' <Array Vector> 
+<Array Vector> ::= ',' <Array Decl> |
+                
+<Array Def>     ::= <Expr> <Array Expr>
+<Array Expr> ::= ',' <Array Def> |
 !-----------------------------------------------------------------------
 !Arrays
 
