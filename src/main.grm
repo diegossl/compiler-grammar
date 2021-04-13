@@ -8,9 +8,12 @@
 id        = {id head} {id tail}*           
 num       = {digit}+ | {digit}+'.'{digit}+          
 str       = '"' ( {string} | '\'{printable} )* '"'
+log       = true | false
+
 Comment Start = '/*'
 Comment End   = '*/'
 Comment Line  = '//'
+
 !-----------------------------------------------------------------------
 !Start
 
@@ -39,9 +42,11 @@ Comment Line  = '//'
 !-----------------------------------------------------------------------
 !Constants and Variables Block
 
-    <Const Block> ::= const '{' <Const Decls> '}' |                                !first = {const}                  
+    <Const Block> ::= const '{' <Const Decls> '}'                               !first = {const}                  
+                    |
 
-    <Var Block>   ::= var '{' <Var Decls> '}' |                                  !first = {var}
+    <Var Block>   ::= var '{' <Var Decls> '}'                                   !first = {var}
+                    |
 
 !-----------------------------------------------------------------------
 !Variables Type and Typedef
@@ -70,40 +75,41 @@ Comment Line  = '//'
 
     <Var>       ::= id <Arrays>                                                 !first = {id}
 
-    <Var List>  ::= ',' <Var> <Var List>                                         !first = {','}
+    <Var List>  ::= ',' <Var> <Var List>                                        !first = {','}
                   |                                                              
     
 !-----------------------------------------------------------------------
 !Constant Declarations
 
-    <Const Decls> ::= <Const Decl> <Const Decls>                                      !first = {int, real, boolean, string, struct, typedef, id, local, global}
-                  | 
+    <Const Decls> ::= <Const Decl> <Const Decls>                                !first = {int, real, boolean, string, struct, typedef, id, local, global}
+                    | 
 
-    <Const Decl>  ::= <Type> <Const> <Const List>                                 !first = {int, real, boolean, string, struct}
-                  | <Typedef>                                                   !first = {typedef}
-                  | <Stm Scope>                                                 !first = {local, global}
-                  | id <Const Id>                                                 !first = {id}
+    <Const Decl>  ::= <Type> <Const> <Const List>                               !first = {int, real, boolean, string, struct}
+                    | <Typedef>                                                 !first = {typedef}
+                    | <Stm Scope>                                               !first = {local, global}
+                    | id <Const Id>                                             !first = {id}
                   
-    <Const Id>    ::= <Const> <Const List> ';'                                        !first = {id}
-                  | <Stm Id>                                                    !first = {'=', '[', '.' '('}
+    <Const Id>    ::= <Const> <Const List> ';'                                  !first = {id}
+                    | <Stm Id>                                                  !first = {'=', '[', '.' '('}
 
     <Const>       ::= id <Arrays>                                               !first = {id}
 
-    <Const List>  ::= ',' <Const> <Const List>                                         !first = {','}
-                  |  '=' <Decl Atribute>';'
+    <Const List>  ::= ',' <Const> <Const List>                                  !first = {','}
+                    |  '=' <Decl Atribute>';'
 
 
-<Decl Atribute> ::= <Array Decl>
-        |  <Expr>
+    <Decl Atribute> ::= <Array Decl>                                            !first = {'{'}
+                      |  <Expr>                                                 !first = {'!', num, str, log, id '('}
 
 
 !-----------------------------------------------------------------------
 !Arrays Atributes
-<Array Decl>    ::= '{' <Array Def> '}' <Array Vector> 
+<Array Decl>    ::= '{' <Array Def> '}' <Array Vector>                          !first = {'{'}
 <Array Vector> ::= ',' <Array Decl> |
                 
-<Array Def>     ::= <Expr> <Array Expr>
+<Array Def>     ::= <Expr> <Array Expr>                                         !first = {'!', num, str, log, id '('}
 <Array Expr> ::= ',' <Array Def> |
+ 
 !-----------------------------------------------------------------------
 !Arrays
 
@@ -133,7 +139,7 @@ Comment Line  = '//'
     <Args>      ::= <Expr> <Args List>                                          !first = {'!', num, str, log, id '('}
                   |
 
-    <Args List> ::= ',' <Expr> <Args List>                                       !first = {','}
+    <Args List> ::= ',' <Expr> <Args List>                                      !first = {','}
                   |
 
 !-----------------------------------------------------------------------
@@ -169,7 +175,7 @@ Comment Line  = '//'
 !-----------------------------------------------------------------------
 !Function Block
 
-    <Func Block>      ::= '{' <Var Block> <Func Stms> '}'                                 !first = {'{'}
+    <Func Block>      ::= '{' <Var Block> <Func Stms> return ';' '}'                                 !first = {'{'}
 
     <Func Stms>       ::= <Func Stm> <Func Stms>                                          !first = {if, while, '{', id, local, global, print, read, ';', return}
                         |
@@ -234,50 +240,49 @@ Comment Line  = '//'
 !-----------------------------------------------------------------------
 !Expressions  
     
-    <Expr>     ::= <Or>                                                                  !first = {'!', num, str, log, id '('}
+    <Expr>     ::= <Or>                                                                   !first = {'!', num, str, log, id '('}
                 
-    <Or>       ::= <And> <Or_>                                                           !first = {'!', num, str, log, id '('}
-    <Or_>      ::= '||' <And> <Or_>                                                      !first = {'||'}
+    <Or>       ::= <And> <Or_>                                                            !first = {'!', num, str, log, id '('}
+    <Or_>      ::= '||' <And> <Or_>                                                       !first = {'||'}
                  | 
 
-    <And>      ::= <Equate> <And_>                                                       !first = {'!', num, str, log, id '('}
-    <And_>     ::= '&&' <Equate> <And_>                                                  !first = {'&&'}
+    <And>      ::= <Equate> <And_>                                                        !first = {'!', num, str, log, id '('}
+    <And_>     ::= '&&' <Equate> <And_>                                                   !first = {'&&'}
                  | 
 
-    <Equate>   ::= <Compare> <Equate_>                                                   !first = {'!', num, str, log, id '('}
-    <Equate_>  ::= '==' <Compare> <Equate_>                                              !first = {'=='}
-                 | '!=' <Compare> <Equate_>                                              !first = {'!='}
+    <Equate>   ::= <Compare> <Equate_>                                                    !first = {'!', num, str, log, id '('}
+    <Equate_>  ::= '==' <Compare> <Equate_>                                               !first = {'=='}
+                 | '!=' <Compare> <Equate_>                                               !first = {'!='}
                  | 
 
-    <Compare>  ::= <Add> <Compare_>                                                      !first = {'!', num, str, log, id '('}
-    <Compare_> ::= '<'  <Add> <Compare_>                                                 !first = {'>'}
-                 | '>' <Add> <Compare_>                                                  !first = {'<'}
-                 | '<=' <Add> <Compare_>                                                 !first = {'<='}
-                 | '>=' <Add> <Compare_>                                                 !first = {'>='}
+    <Compare>  ::= <Add> <Compare_>                                                       !first = {'!', num, str, log, id '('}
+    <Compare_> ::= '<'  <Add> <Compare_>                                                  !first = {'>'}
+                 | '>' <Add> <Compare_>                                                   !first = {'<'}
+                 | '<=' <Add> <Compare_>                                                  !first = {'<='}
+                 | '>=' <Add> <Compare_>                                                  !first = {'>='}
                  | 
 
-    <Add>      ::= <Mult> <Add_>                                                         !first = {'!', num, str, log, id '('}
-    <Add_>     ::= '+' <Mult> <Add_>                                                     !first = {'+'}
-                 | '-' <Mult> <Add_>                                                     !first = {'-'}
+    <Add>      ::= <Mult> <Add_>                                                          !first = {'!', num, str, log, id '('}
+    <Add_>     ::= '+' <Mult> <Add_>                                                      !first = {'+'}
+                 | '-' <Mult> <Add_>                                                      !first = {'-'}
                  | 
                    
-    <Mult>     ::= <Unary> <Mult_>                                                       !first = {'!', num, str, log, id '('}
-    <Mult_>    ::= '*' <Unary> <Mult_>                                                   !first = {'*'}
-                 | '/' <Unary> <Mult_>                                                   !first = {'/'}
+    <Mult>     ::= <Unary> <Mult_>                                                        !first = {'!', num, str, log, id '('}
+    <Mult_>    ::= '*' <Unary> <Mult_>                                                    !first = {'*'}
+                 | '/' <Unary> <Mult_>                                                    !first = {'/'}
                  | 
 
-    <Unary>    ::= '!' <Unary>                                                           !first = {'!'}
-                 | <Value>                                                               !first = {num, str, log, id '('}
+    <Unary>    ::= '!' <Unary>                                                            !first = {'!'}
+                 | <Value>                                                                !first = {num, str, log, id '('}
 
-    <Value>    ::= num                                                                   !first = {num}
-                 | str                                                                   !first = {str}
-                 | log                                                                   !first = {log}
-                 | 'local' <Access>
-                 | 'global' <Access>
-                 | id <Id Value>   
-                                                                         !first = {id}
-                 | '(' <Expr> ')'                                                        !first = {'('}
+    <Value>    ::= num                                                                    !first = {num}
+                 | str                                                                    !first = {str}
+                 | log                                                                    !first = {log}
+                 | local <Access>                                                         !first = {local}
+                 | global <Access>                                                        !first = {global}
+                 | id <Id Value>                                                          !first = {id}
+                 | '(' <Expr> ')'                                                         !first = {'('}
 
-    <Id Value> ::= <Arrays> <Accesses>                                                   !first = {'[', '.'}
-                 | '(' <Args> ')'                                                        !first = {'('}
+    <Id Value> ::= <Arrays> <Accesses>                                                    !first = {'[', '.'}
+                 | '(' <Args> ')'                                                         !first = {'('}
 
