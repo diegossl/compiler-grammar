@@ -175,11 +175,10 @@ Comment Line  = '//'
 !-----------------------------------------------------------------------
 !Function Block
 
-    <Func Block>      ::= '{' <Var Block> <Func Stms> return ';' '}'                                 !first = {'{'}
+    <Func Block>      ::= '{' <Var Block> <Func Stms>  return <Expr>';' '}'                                !first = {'{'}
 
     <Func Stms>       ::= <Func Stm> <Func Stms>                                          !first = {if, while, '{', id, local, global, print, read, ';', return}
                         |
-                   
     <Func Stm>        ::= if '(' <Expr> ')' then <Func If Stm>                            !first = {if}
                         | while '(' <Expr> ')' <Func Stm>                                 !first = {while}
                         | <Func Normal Stm>                                               !first = {'{', id, local, global, print, read, ';', return}
@@ -194,7 +193,7 @@ Comment Line  = '//'
     <Func Normal Stm> ::= '{' <Func Stms> '}'                                             !first = {'{'}
                         | <Var Stm>                                                       !first = {id, local, global, print, read}
                         | ';'                                                             !first = {';'}
-                        | return <Expr> ';'                                               !first = {return}
+
 
 !-----------------------------------------------------------------------
 !Procedure Block
@@ -211,7 +210,7 @@ Comment Line  = '//'
     <Proc If Stm>     ::= <Proc Stm>                                                      !first = {if, while, '{', id, local, global, print, read, ';'}
                         | <Proc Then Stm> else <Proc Stm>                                 !first = {if, while, '{', id, local, global, print, read, ';'}
                    
-    <Proc Then Stm>   ::= if '(' <Expr> ')' then <Proc Then Stm> else <Proc Then Stm>     !first = {if}
+    <Proc Then Stm>   ::= if '(' <Expr>')' then <Proc Then Stm> else <Proc Then Stm>     !first = {if}
                         | while '(' <Expr> ')' <Proc Then Stm>                            !first = {while}
                         | <Proc Normal Stm>                                               !first = {'{', id, local, global, print, read, ';'}
                    
@@ -285,4 +284,5 @@ Comment Line  = '//'
 
     <Id Value> ::= <Arrays> <Accesses>                                                    !first = {'[', '.'}
                  | '(' <Args> ')'                                                         !first = {'('}
+
 
