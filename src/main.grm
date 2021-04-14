@@ -177,7 +177,7 @@ Comment Line  = '//'
 !-----------------------------------------------------------------------
 !Function Block
 
-    <Func Block>      ::= '{' <Var Block> <Func Stms> return <Expr> ';' '}'               !first = {'{'}
+    <Func Block>      ::= '{' <Var Block> <Func Stms> '}'                                 !first = {'{'}
 
     <Func Stms>       ::= <Func Stm> <Func Stms>                                          !first = {if, while, '{', id, local, global, print, read, ';', return}
                         |
@@ -196,6 +196,7 @@ Comment Line  = '//'
     <Func Normal Stm> ::= '{' <Func Stms> '}'                                             !first = {'{'}
                         | <Var Stm>                                                       !first = {id, local, global, print, read}
                         | ';'                                                             !first = {';'}
+                        | return <Expr> ';'                                               !first = {return}
 
 !-----------------------------------------------------------------------
 !Procedure Block
