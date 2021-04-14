@@ -22,7 +22,7 @@ Comment Line  = '//'
     <Structs>     ::= <Struct Block> <Structs>                                  !first = {struct}
                     |
                
-    <Start Block> ::= procedure start '(' ')' <Proc Block>                      !first = {procedure}
+    <Start Block> ::= procedure start '(' ')' <Func Block>                      !first = {procedure}
 
     
     <Decls>       ::= <Decl> <Decls>                                            !first = {function, procedure}
