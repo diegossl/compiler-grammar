@@ -86,7 +86,7 @@ function int testIfs(int numero) {
             else
                 print("acertou, mas demorou ", vezes, "vezes");
                 
-            return true;
+            acertou = true;
         }                            
     }    
     

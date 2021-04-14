@@ -101,14 +101,16 @@ Comment Line  = '//'
     <Decl Atribute> ::= <Array Decl>                                            !first = {'{'}
                       |  <Expr>                                                 !first = {'!', num, str, log, id '('}
 
-
 !-----------------------------------------------------------------------
 !Arrays Atributes
-<Array Decl>    ::= '{' <Array Def> '}' <Array Vector>                          !first = {'{'}
-<Array Vector> ::= ',' <Array Decl> |
+
+    <Array Decl>   ::= '{' <Array Def> '}' <Array Vector>                       !first = {'{'}
+    <Array Vector> ::= ',' <Array Decl>                                         !first = {','}
+                     | 
                 
-<Array Def>     ::= <Expr> <Array Expr>                                         !first = {'!', num, str, log, id '('}
-<Array Expr> ::= ',' <Array Def> |
+    <Array Def>    ::= <Expr> <Array Expr>                                      !first = {'!', num, str, log, id '('}
+    <Array Expr>   ::= ',' <Array Def>                                          !first = {','}
+                     | 
  
 !-----------------------------------------------------------------------
 !Arrays
@@ -150,7 +152,7 @@ Comment Line  = '//'
 !-----------------------------------------------------------------------
 !Procedure Declaration
 
-    <Proc Decl> ::= procedure id '(' <Params> ')' <Proc Block>                  !first{procedure}
+    <Proc Decl> ::= procedure id '(' <Params> ')' <Func Block>                  !first{procedure}
 
 !-----------------------------------------------------------------------
 !Parameters
@@ -180,15 +182,15 @@ Comment Line  = '//'
     <Func Stms>       ::= <Func Stm> <Func Stms>                                          !first = {if, while, '{', id, local, global, print, read, ';', return}
                         |
                    
-    <Func Stm>        ::= if '(' <Expr> ')' then <Func If Stm>                            !first = {if}
-                        | while '(' <Expr> ')' <Func Stm>                                 !first = {while}
+    <Func Stm>        ::= if '(' <Log Expr> ')' then <Func If Stm>                        !first = {if}
+                        | while '(' <Log Expr> ')' <Func Stm>                             !first = {while}
                         | <Func Normal Stm>                                               !first = {'{', id, local, global, print, read, ';', return}
                         
     <Func If Stm>     ::= <Func Stm>                                                      !first = {if, while, '{', id, local, global, print, read, ';', return}
                         | <Func Then Stm> else <Func Stm>                                 !first = {if, while, '{', id, local, global, print, read, ';', return}
                    
-    <Func Then Stm>   ::= if '(' <Expr> ')' then <Func Then Stm> else <Func Then Stm>     !first = {if}
-                        | while '(' <Expr> ')' <Func Then Stm>                            !first = {while}
+    <Func Then Stm>   ::= if '(' <Log Expr> ')' then <Func Then Stm> else <Func Then Stm> !first = {if}
+                        | while '(' <Log Expr> ')' <Func Then Stm>                        !first = {while}
                         | <Func Normal Stm>                                               !first = {'{', id, local, global, print, read, ';', return}
                    
     <Func Normal Stm> ::= '{' <Func Stms> '}'                                             !first = {'{'}
@@ -196,29 +198,6 @@ Comment Line  = '//'
                         | ';'                                                             !first = {';'}
                         | return <Expr> ';'                                               !first = {return}
 
-!-----------------------------------------------------------------------
-!Procedure Block
-
-    <Proc Block>      ::= '{' <Var Block> <Proc Stms> '}'                                 !first = {'{'}
-
-    <Proc Stms>       ::= <Proc Stm> <Proc Stms>                                          !first = {if, while, '{', id, local, global, print, read, ';'}
-                        |
-                   
-    <Proc Stm>        ::= if '(' <Expr> ')' then <Proc If Stm>                            !first = {if}
-                        | while '(' <Expr> ')' <Proc Stm>                                 !first = {while}
-                        | <Proc Normal Stm>                                               !first = {'{', id, local, global, print, read, ';'}
-                        
-    <Proc If Stm>     ::= <Proc Stm>                                                      !first = {if, while, '{', id, local, global, print, read, ';'}
-                        | <Proc Then Stm> else <Proc Stm>                                 !first = {if, while, '{', id, local, global, print, read, ';'}
-                   
-    <Proc Then Stm>   ::= if '(' <Expr> ')' then <Proc Then Stm> else <Proc Then Stm>     !first = {if}
-                        | while '(' <Expr> ')' <Proc Then Stm>                            !first = {while}
-                        | <Proc Normal Stm>                                               !first = {'{', id, local, global, print, read, ';'}
-                   
-    <Proc Normal Stm> ::= '{' <Proc Stms> '}'                                             !first = {'{'}
-                        | <Var Stm>                                                       !first = {id, local, global, print, read}
-                        | ';'                                                             !first = {';'}
-                      
 !-----------------------------------------------------------------------
 !Variable Statements
 
@@ -285,3 +264,39 @@ Comment Line  = '//'
 
     <Id Value> ::= <Arrays> <Accesses>                                                    !first = {'[', '.'}
                  | '(' <Args> ')'                                                         !first = {'('}
+
+!----------------------------------------------------------------------
+!Logic Expression
+    
+    <Log Expr>     ::= <Log Or>                                                           !first = {'!', num, str, log, id '('}
+                
+    <Log Or>       ::= <Log And> <Log Or_>                                                !first = {'!', num, str, log, id '('}
+    <Log Or_>      ::= '||' <Log And> <Log Or_>                                           !first = {'||'}
+                     | 
+
+    <Log And>      ::= <Log Equate> <Log And_>                                            !first = {'!', num, str, log, id '('}
+    <Log And_>     ::= '&&' <Log Equate> <Log And_>                                       !first = {'&&'}
+                     | 
+
+    <Log Equate>   ::= <Log Compare> <Log Equate_>                                        !first = {'!', num, str, log, id '('}
+    <Log Equate_>  ::= '==' <Log Compare> <Log Equate_>                                   !first = {'=='}
+                     | '!=' <Log Compare> <Log Equate_>                                   !first = {'!='}
+                     | 
+
+    <Log Compare>  ::= <Log Unary> <Log Compare_>                                         !first = {'!', num, str, log, id '('}
+    <Log Compare_> ::= '<' <Log Unary> <Log Compare_>                                     !first = {'>'}
+                     | '>' <Log Unary> <Log Compare_>                                     !first = {'<'}
+                     | '<=' <Log Unary> <Log Compare_>                                    !first = {'<='}
+                     | '>=' <Log Unary> <Log Compare_>                                    !first = {'>='}
+                     | 
+
+    <Log Unary>    ::= '!' <Log Unary>                                                    !first = {'!'}
+                     | <Log Value>                                                        !first = {num, str, log, id '('}
+
+    <Log Value>    ::= num                                                                !first = {num}
+                     | str                                                                !first = {str}
+                     | log                                                                !first = {log}
+                     | local <Access>                                                     !first = {local}
+                     | global <Access>                                                    !first = {global}
+                     | id <Id Value>                                                      !first = {id}
+                     | '(' <Log Expr> ')'                                                 !first = {'('}
