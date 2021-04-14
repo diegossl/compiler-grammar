@@ -284,5 +284,3 @@ Comment Line  = '//'
 
     <Id Value> ::= <Arrays> <Accesses>                                                    !first = {'[', '.'}
                  | '(' <Args> ')'                                                         !first = {'('}
-
-
