@@ -152,7 +152,7 @@ Comment Line  = '//'
 !-----------------------------------------------------------------------
 !Procedure Declaration
 
-    <Proc Decl> ::= procedure id '(' <Params> ')' <Proc Block>                  !first{procedure}
+    <Proc Decl> ::= procedure id '(' <Params> ')' <Func Block>                  !first{procedure}
 
 !-----------------------------------------------------------------------
 !Parameters
@@ -198,29 +198,6 @@ Comment Line  = '//'
                         | ';'                                                             !first = {';'}
                         | return <Expr> ';'                                               !first = {return}
 
-!-----------------------------------------------------------------------
-!Procedure Block
-
-    <Proc Block>      ::= '{' <Var Block> <Proc Stms> '}'                                 !first = {'{'}
-
-    <Proc Stms>       ::= <Proc Stm> <Proc Stms>                                          !first = {if, while, '{', id, local, global, print, read, ';'}
-                        |
-                   
-    <Proc Stm>        ::= if '(' <Log Expr> ')' then <Proc If Stm>                        !first = {if}
-                        | while '(' <Log Expr> ')' <Proc Stm>                             !first = {while}
-                        | <Proc Normal Stm>                                               !first = {'{', id, local, global, print, read, ';'}
-                        
-    <Proc If Stm>     ::= <Proc Stm>                                                      !first = {if, while, '{', id, local, global, print, read, ';'}
-                        | <Proc Then Stm> else <Proc Stm>                                 !first = {if, while, '{', id, local, global, print, read, ';'}
-                   
-    <Proc Then Stm>   ::= if '(' <Log Expr> ')' then <Proc Then Stm> else <Proc Then Stm> !first = {if}
-                        | while '(' <Log Expr> ')' <Proc Then Stm>                        !first = {while}
-                        | <Proc Normal Stm>                                               !first = {'{', id, local, global, print, read, ';'}
-                   
-    <Proc Normal Stm> ::= '{' <Proc Stms> '}'                                             !first = {'{'}
-                        | <Var Stm>                                                       !first = {id, local, global, print, read}
-                        | ';'                                                             !first = {';'}
-                      
 !-----------------------------------------------------------------------
 !Variable Statements
 
