@@ -101,14 +101,16 @@ Comment Line  = '//'
     <Decl Atribute> ::= <Array Decl>                                            !first = {'{'}
                       |  <Expr>                                                 !first = {'!', num, str, log, id '('}
 
-
 !-----------------------------------------------------------------------
 !Arrays Atributes
-<Array Decl>    ::= '{' <Array Def> '}' <Array Vector>                          !first = {'{'}
-<Array Vector> ::= ',' <Array Decl> |
+
+    <Array Decl>   ::= '{' <Array Def> '}' <Array Vector>                       !first = {'{'}
+    <Array Vector> ::= ',' <Array Decl>                                         !first = {','}
+                     | 
                 
-<Array Def>     ::= <Expr> <Array Expr>                                         !first = {'!', num, str, log, id '('}
-<Array Expr> ::= ',' <Array Def> |
+    <Array Def>    ::= <Expr> <Array Expr>                                      !first = {'!', num, str, log, id '('}
+    <Array Expr>   ::= ',' <Array Def>                                          !first = {','}
+                     | 
  
 !-----------------------------------------------------------------------
 !Arrays
