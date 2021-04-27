@@ -182,16 +182,12 @@ Comment Line  = '//'
     <Func Stms>       ::= <Func Stm> <Func Stms>                                          !first = {if, while, '{', id, local, global, print, read, ';', return}
                         |
                    
-    <Func Stm>        ::= if '(' <Log Expr> ')' then <Func If Stm>                        !first = {if}
+    <Func Stm>        ::= if '(' <Log Expr> ')' then <Func Stm> <Else Stm> <Func Stm>     !first = {if}
                         | while '(' <Log Expr> ')' <Func Stm>                             !first = {while}
                         | <Func Normal Stm>                                               !first = {'{', id, local, global, print, read, ';', return}
                         
-    <Func If Stm>     ::= <Func Stm>                                                      !first = {if, while, '{', id, local, global, print, read, ';', return}
-                        | <Func Then Stm> else <Func Stm>                                 !first = {if, while, '{', id, local, global, print, read, ';', return}
-                   
-    <Func Then Stm>   ::= if '(' <Log Expr> ')' then <Func Then Stm> else <Func Then Stm> !first = {if}
-                        | while '(' <Log Expr> ')' <Func Then Stm>                        !first = {while}
-                        | <Func Normal Stm>                                               !first = {'{', id, local, global, print, read, ';', return}
+    <Else Stm>        ::= else                                                            !first = {else}
+                        | 
                    
     <Func Normal Stm> ::= '{' <Func Stms> '}'                                             !first = {'{'}
                         | <Var Stm>                                                       !first = {id, local, global, print, read}
