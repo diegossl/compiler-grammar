@@ -89,7 +89,7 @@ Comment Line  = '//'
                     | <Stm Scope>                                               !first = {local, global}
                     | id <Const Id>                                             !first = {id}
                   
-    <Const Id>    ::= <Const> <Const List> ';'                                  !first = {id}
+    <Const Id>    ::= <Const> <Const List>                                      !first = {id}
                     | <Stm Id>                                                  !first = {'=', '[', '.' '('}
 
     <Const>       ::= id <Arrays>                                               !first = {id}
